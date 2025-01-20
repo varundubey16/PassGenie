@@ -1,0 +1,158 @@
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VD</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+       
+    <style>
+            body {
+                transition: background-color 0.3s, color 0.3s;
+            }
+            .light-theme {
+                background-color: #ffffff;
+                color: #000000;
+            }
+            .dark-theme {
+                background-color: #1a1a2e;
+                color: #ffffff;
+            }
+            .strength-bar {
+                height: 10px;
+                border-radius: 5px;
+                transition: width 0.3s, background-color 0.3s;
+            }
+            .theme-switch {
+                cursor: pointer;
+                font-size: 1.5rem;
+                position: absolute;
+                top: 20px;
+                right: 20px;
+            }
+            .password-box, .ai-password-box {
+                max-width: 520px;
+                margin: auto;
+                padding: 30px;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+            .message {
+                font-weight: bold;
+            }
+            .action-buttons {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+            }
+
+                .ai-suggestions {
+                    margin-top: 20px;
+                }
+    </style>
+</head>
+<body class="light-theme">
+<div class="theme-switch" id="theme-switch">
+    <i class="fas fa-sun"></i>
+</div>
+<div class="container text-center mt-5">
+    <h1>VraunzPassStrength</h1>
+    <p>Strength of your Password is Here!!!</p>
+    <div class="password-box">
+        <input type="password" id="password" class="form-control mb-3" placeholder="Enter your password">
+        <div class="strength-bar" id="strength-bar"></div>
+        <p class="message mt-2" id="message">Type a Password.....</p>
+        <div class="action-buttons">
+            <button class="btn btn-primary" id="copy-password" disabled>Copy your Password</button>
+            <button class="btn btn-success" id="download-password" disabled>Download your Password</button>
+        </div>
+        <div class="ai-suggestions">
+            <h5>A.I based Suggestions</h5>
+            <p id="ai-suggestions-text">Waiting for your password input...</p>
+        </div>
+    </div>
+    <div class="ai-password-box mt-5">
+        <h3>A.I Password Generator</h3>
+        <div class="d-flex align-items-center">
+            <input type="text" id="ai-generated-password" class="form-control me-2" placeholder="AI generated password will appear here..." readonly>
+            <button class="btn btn-secondary" id="copy-ai-password" disabled>Copy</button>
+        </div>
+        <button class="btn btn-info mt-3" id="generate-ai-password">Generate Password with AI</button>
+    </div>
+</div>
+    <script>
+        const passwordInput = document.getElementById('password');
+        const strengthBar = document.getElementById('strength-bar');
+        const message = document.getElementById('message');
+        const copyButton = document.getElementById('copy-password');
+        const downloadButton = document.getElementById('download-password');
+        const aiSuggestionsText = document.getElementById('ai-suggestions-text');
+        const themeSwitch = document.getElementById('theme-switch');
+        const aiGeneratedPasswordInput = document.getElementById('ai-generated-password');
+        const copyAiButton = document.getElementById('copy-ai-password');
+        const generateAiButton = document.getElementById('generate-ai-password');
+        let isDarkMode = false;
+        themeSwitch.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            document.body.className = isDarkMode ? 'dark-theme' : 'light-theme';
+            themeSwitch.innerHTML = isDarkMode ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        });
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(passwordInput.value);
+            alert('Password copied to clipboard!');
+        });
+        downloadButton.addEventListener('click', () => {
+            const blob = new Blob([passwordInput.value], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'password.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+        passwordInput.addEventListener('input', async () => {
+            const password = passwordInput.value;
+            const response = await fetch('/check_password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ password })
+            });
+            const data = await response.json();
+            const levels = {
+                "Not Strong Enough": 20,
+                "Almost Strong": 50,
+                "Strong": 80,
+                "Strongest!!!!!": 100
+            };
+            strengthBar.style.width = `${levels[data.strength]}%`;
+            strengthBar.style.backgroundColor = data.color;
+            message.textContent = data.strength;
+            const isPasswordValid = data.strength !== "Not Strong Enough";
+            copyButton.disabled = !isPasswordValid;
+            downloadButton.disabled = !isPasswordValid;
+            const aiResponse = await fetch('/ai_suggestions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ password })
+            });
+            const aiData = await aiResponse.json();
+            aiSuggestionsText.textContent = aiData.suggestions;
+        });
+        //pasgen
+        generateAiButton.addEventListener('click', async () => {
+            const response = await fetch('/generate_ai_password');
+            const data = await response.json();
+            aiGeneratedPasswordInput.value = data.password;
+            copyAiButton.disabled = false;
+        });
+        copyAiButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(aiGeneratedPasswordInput.value);
+            alert('AI generated password copied!');
+        });
+    </script>
+</body>
+</html>
