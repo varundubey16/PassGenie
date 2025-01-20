@@ -1,17 +1,17 @@
-# Flask Speech Recognition App
+# Password Strength Classifier and Generator
 
-This is a simple Flask-based web application that provides speech recognition functionality. It processes speech from the user's microphone and converts it into text. Additionally, the recognized text is read aloud using text-to-speech synthesis.
+This is a simple Flask-based web application which used deep learning techniques to classify password strength and generate passwords
 
 ## Requirements
 
-To run this app, you will need to install the following Python packages:
+To run, install the following Python packages:
 
-- **sklearn**: For machine learning functionalities
-- **tensorflow**: For AI-based speech processing models
-- **numpy**: For numerical operations
-- **flask**: For the web framework
+- **sklearn**
+- **tensorflow** 
+- **numpy**
+- **flask** 
 
-**Note**: This app may be slow on low-end computers, as it uses TensorFlow and other computationally intensive libraries. It performs much better on machines with a GPU for processing.
+**Note**: This app may be slow on low-end computers, cause it used TensorFlow and other computationally intensive libraries. It performs better on with a GPU for processing.
 
 ### Installation
 
