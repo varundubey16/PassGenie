@@ -82,10 +82,10 @@ def home():
 def chartie():
 
 
-    #if os.path.exists('livechart.png'):
-    #    return send_file('livechart.png', mimetype='image/png')
-    #return 'none', 404
-    # -io work
+    '''if os.path.exists('livechart.png'):
+        return send_file('livechart.png', mimetype='image/png')
+    return 'none', 404
+     -io work'''
     length = int(request.args.get('len', 0))
     lower = int(request.args.get('low', 0))
     upper = int(request.args.get('up', 0))
@@ -117,9 +117,9 @@ def checkpas():
     upper = 1 if any(c.isupper() for c in p) else 0
     digit = 1 if any(c.isdigit() for c in p) else 0
     special = 1 if any(c in CHARS for c in p) else 0  
-    # --- COMMENTED OUT ORIGINAL PREDICTION ---
-    # res = vraunzclassify.predict([[length, lower, upper, digit, special]])[0]
-    # --- NEW PREDICTION CODE (FIXES SKLEARN WARNING) ---
+    #oldprediction
+    #res = vraunzclassify.predict([[length, lower, upper, digit, special]])[0]
+    # now sklearn warning gone (12 may 2026)
     inpudta = pd.DataFrame([[length, lower, upper, digit, special]], 
                               columns=['len', 'low', 'up', 'digi', 'specl'])
     res = vraunzclassify.predict(inpudta)[0]    
@@ -127,7 +127,7 @@ def checkpas():
     clr = colors.get(res, "gray")
     ent = getentro(p)
 
-    # --- COMMENTED OUT ORIGINAL FILE SAVING & RETURN ---
+    '''filesavendreturn
     # #plotnow (keeping your original livechart code running on every keystroke exactly as requested)
     # plt.figure(figsize=(4.5, 2.2))
     # plt.bar(["Length", "Lowercase", "Uppercase", "Digits", "Specialchar"], [length, lower, upper, digit, special], color=clr)  
@@ -140,8 +140,8 @@ def checkpas():
     #     "color": clr,
     #     "entropy": ent,
     #     "plot_url": "/chartie?rand=" + str(random.random())
-    # })
-    # --- NEW RETURNING CODE (FIXES WINDOWS FILE-LOCK CRASH) ---
+    # })'''
+    #filelockcrash-
     plot_url = f"/chartie?len={length}&low={lower}&up={upper}&dig={digit}&spc={special}&clr={clr}&rand={random.random()}"
     return jsonify({
         "strength": res,
