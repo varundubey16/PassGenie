@@ -128,19 +128,19 @@ def checkpas():
     ent = getentro(p)
 
     '''filesavendreturn
-    # #plotnow (keeping your original livechart code running on every keystroke exactly as requested)
-    # plt.figure(figsize=(4.5, 2.2))
-    # plt.bar(["Length", "Lowercase", "Uppercase", "Digits", "Specialchar"], [length, lower, upper, digit, special], color=clr)  
-    # plt.ylabel("Matches")
-    # plt.tight_layout()
-    # plt.savefig('livechart.png')
-    # plt.close()
-    # return jsonify({
-    #     "strength": res,
-    #     "color": clr,
-    #     "entropy": ent,
-    #     "plot_url": "/chartie?rand=" + str(random.random())
-    # })'''
+    # #plotnow (live chart code
+      plt.figure(figsize=(4.5, 2.2))
+      plt.bar(["Length", "Lowercase", "Uppercase", "Digits", "Specialchar"], [length, lower, upper, digit, special], color=clr)  
+      plt.ylabel("Matches")
+      plt.tight_layout()
+      plt.savefig('livechart.png')
+      plt.close()
+      return jsonify({
+         "strength": res,
+         "color": clr,
+         "entropy": ent,
+         "plot_url": "/chartie?rand=" + str(random.random())
+      })'''
     #filelockcrash-
     plot_url = f"/chartie?len={length}&low={lower}&up={upper}&dig={digit}&spc={special}&clr={clr}&rand={random.random()}"
     return jsonify({
