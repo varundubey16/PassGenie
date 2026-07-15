@@ -13,7 +13,7 @@ To run need these:
 - **seaborn**
 - **flask**
 
-**Note**: This app although is lightweight and runs completely on the CPU. This app may be slow on low-end computers, cause it used actual passwords large dataset and hence is computationally intensive. It does perform better on machine with GPU and more ram (8,16gb) instead of APU pc/laptop with 4gb ram. It trains a DT classifier when the application starts
+**Note**: This app although is lightweight and runs completely on the CPU. This app may be slow on low-end computers, cause it used actual rock you leaked passwords (combined) extremely large dataset and hence is computationally intensive/expensive. It does perform better on machine with GPU and more ram (8,16gb) instead of APU pc/laptop with 4gb ram. It trains a DT classifier when the application starts
 
 ### Installation
 
