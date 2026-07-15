@@ -1,158 +1,220 @@
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VD</title>
+<!-- Bootstrap handles the structural/responsive rules under the hood -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-       
-    <style>
-            body {
-                transition: background-color 0.3s, color 0.3s;
-            }
-            .light-theme {
-                background-color: #ffffff;
-                color: #000000;
-            }
-            .dark-theme {
-                background-color: #1a1a2e;
-                color: #ffffff;
-            }
-            .strength-bar {
-                height: 10px;
-                border-radius: 5px;
-                transition: width 0.3s, background-color 0.3s;
-            }
-            .theme-switch {
-                cursor: pointer;
-                font-size: 1.5rem;
-                position: absolute;
-                top: 20px;
-                right: 20px;
-            }
-            .password-box, .ai-password-box {
-                max-width: 520px;
-                margin: auto;
-                padding: 30px;
-                border: 1px solid #ccc;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            }
-            .message {
-                font-weight: bold;
-            }
-            .action-buttons {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 20px;
-            }
-
-                .ai-suggestions {
-                    margin-top: 20px;
-                }
-    </style>
+<style>
+    body {
+        transition: 0.2s;
+    }
+    .light-theme { background-color: #f8f9fa; color: #212529; }
+    .dark-theme { background-color: #121212; color: #e0e0e0; }
+    .cardbox {
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        background: #fff;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        /*min-height: 520px;*/
+    }
+    .dark-theme .cardbox {
+        background-color: #1e1e1e;
+        border-color: #333;
+    }
+    .strength-bar {
+        height: 8px;
+        width: 0%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    #caps-warning {
+        display: none;
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 4px;
+    }
+</style>
 </head>
 <body class="light-theme">
-<div class="theme-switch" id="theme-switch">
-    <i class="fas fa-sun"></i>
+<div class="p-3 text-end">
+    <button class="btn btn-sm btn-outline-secondary" id="theme-btn">
+        <i class="fas fa-moon"></i> Light/dark
+    </button>
 </div>
-<div class="container text-center mt-5">
-    <h1>VraunzPassStrength</h1>
-    <p>Strength of your Password is Here!!!</p>
-    <div class="password-box">
-        <input type="password" id="password" class="form-control mb-3" placeholder="Enter your password">
-        <div class="strength-bar" id="strength-bar"></div>
-        <p class="message mt-2" id="message">Type a Password.....</p>
-        <div class="action-buttons">
-            <button class="btn btn-primary" id="copy-password" disabled>Copy your Password</button>
-            <button class="btn btn-success" id="download-password" disabled>Download your Password</button>
+<!--removed old up down, now leftright better look-->
+<div class="cont container">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">VraunzPassStrength</h1>
+        <p class="text-muted">decision tree classifier usages</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="cardbox">
+                <h4 class="mb-3"><i class="fa-regular fa-shield"></i> Password Strength Check</h4>
+                <input type="password" id="pass" class="formctrl form-control" placeholder="Type password here...">
+                <div id="caps-warning"><i class="fas fa-exclamation-triangle"></i> Caps Lock is ON!</div>                        
+                <div class="strength-bar mt-3" id="bar"></div>
+                <h5 class="mt-2 fw-bold" id="msg" style="color: gray;">Type a Password.....</h5>            
+                <div class="small my-3 text-muted" style="display: none;">
+                    <!--HIDDENTHIS, using display none, can remove when debug or improving later cuz user need not see this-->
+                    id="entropy"
+                    Entropy calculation: <span id="enttxt" class="badge bg-secondary">0</span> bits
+                </div>
+                <div id="chartwrp" style="display:none; text-center">
+                    <img id="chartimg" style="max-width:100%; height:auto;" src="" alt="metrics chart">
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-sm btn-primary" id="btn-copy" disabled>Copy</button>
+                    <button class="btn btn-sm btn-success" id="btn-dl" disabled>Save to File</button>
+                </div>
+                <div class="mt-4 pt-2 border-top">
+                    <h6>Suggestions:</h6>
+                    <p id="tip" class="small text-muted">Waiting for your input...</p>
+                </div>
+            </div>
         </div>
-        <div class="ai-suggestions">
-            <h5>A.I based Suggestions</h5>
-            <p id="ai-suggestions-text">Waiting for your password input...</p>
+        <div class="col-md-6">
+            <div class="cardbox">
+                <h4 class="mb-3"><i class="fa-light fa-robot"></i>Password Generator</h4>
+                <p class="text-muted small">Generates a highly secure password like google</p>  
+                <div class="input-group my-4">
+                    <!--classform-control-->
+                    <input type="text" id="gen-output" class="formctrl form-control" placeholder="Click generate button..." readonly>
+                    <button class="btn btn-outline-secondary" id="btn-copy-gen" disabled>Copy Password</button>
+                </div>
+                <button class="btn btn-dark py-2" id="btn-gen">Generate a password</button>
+
+            </div>
         </div>
     </div>
-    <div class="ai-password-box mt-5">
-        <h3>A.I Password Generator</h3>
-        <div class="d-flex align-items-center">
-            <input type="text" id="ai-generated-password" class="form-control me-2" placeholder="AI generated password will appear here..." readonly>
-            <button class="btn btn-secondary" id="copy-ai-password" disabled>Copy</button>
-        </div>
-        <button class="btn btn-info mt-3" id="generate-ai-password">Generate Password with AI</button>
-    </div>
 </div>
-    <script>
-        const passwordInput = document.getElementById('password');
-        const strengthBar = document.getElementById('strength-bar');
-        const message = document.getElementById('message');
-        const copyButton = document.getElementById('copy-password');
-        const downloadButton = document.getElementById('download-password');
-        const aiSuggestionsText = document.getElementById('ai-suggestions-text');
-        const themeSwitch = document.getElementById('theme-switch');
-        const aiGeneratedPasswordInput = document.getElementById('ai-generated-password');
-        const copyAiButton = document.getElementById('copy-ai-password');
-        const generateAiButton = document.getElementById('generate-ai-password');
-        let isDarkMode = false;
-        themeSwitch.addEventListener('click', () => {
-            isDarkMode = !isDarkMode;
-            document.body.className = isDarkMode ? 'dark-theme' : 'light-theme';
-            themeSwitch.innerHTML = isDarkMode ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
-        });
-        copyButton.addEventListener('click', () => {
-            navigator.clipboard.writeText(passwordInput.value);
-            alert('Password copied to clipboard!');
-        });
-        downloadButton.addEventListener('click', () => {
-            const blob = new Blob([passwordInput.value], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'password.txt';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-        passwordInput.addEventListener('input', async () => {
-            const password = passwordInput.value;
-            const response = await fetch('/check_password', {
+
+
+
+
+<script>
+    //const entrope = 
+    const pass =document.getElementById('pass');
+    const bar =document.getElementById('bar');
+    const msg = document.getElementById('msg');
+    const enttxt = document.getElementById('enttxt');
+    const chartwrp = document.getElementById('chartwrp');
+    const chartimg = document.getElementById('chartimg');
+    const tip = document.getElementById('tip');
+    let debounceTimer;
+    //capslocklstenraddnew
+    pass.addEventListener('keyup', (e) => {
+        if (e.getModifierState('CapsLock')) {
+            document.getElementById('caps-warning').style.display = 'block';
+        } else {
+            document.getElementById('caps-warning').style.display = 'none';
+        }
+    });
+
+
+    pass.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(passcheckrunnerv2, 300);
+    });
+    async function passcheckrunnerv2() {
+        const val = pass.value;
+        console.log("Checking text runner v2...");    
+        if(!val) {
+            resetUI();
+            return;
+        }
+        try {
+            const res = await fetch('/checkpas', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ password })
-            });
-            const data = await response.json();
-            const levels = {
-                "Not Strong Enough": 20,
-                "Almost Strong": 50,
-                "Strong": 80,
-                "Strongest!!!!!": 100
-            };
-            strengthBar.style.width = `${levels[data.strength]}%`;
-            strengthBar.style.backgroundColor = data.color;
-            message.textContent = data.strength;
-            const isPasswordValid = data.strength !== "Not Strong Enough";
-            copyButton.disabled = !isPasswordValid;
-            downloadButton.disabled = !isPasswordValid;
-            const aiResponse = await fetch('/ai_suggestions', {
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: val })
+            });        
+            if(!res.ok) throw new Error("Backendcrash");
+            const data = await res.json();           
+            uiupdt(data);
+            const sugRes = await fetch('/aisggsts', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ password })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: val })
             });
-            const aiData = await aiResponse.json();
-            aiSuggestionsText.textContent = aiData.suggestions;
-        });
-        //pasgen
-        generateAiButton.addEventListener('click', async () => {
-            const response = await fetch('/generate_ai_password');
-            const data = await response.json();
-            aiGeneratedPasswordInput.value = data.password;
-            copyAiButton.disabled = false;
-        });
-        copyAiButton.addEventListener('click', () => {
-            navigator.clipboard.writeText(aiGeneratedPasswordInput.value);
-            alert('AI generated password copied!');
-        });
-    </script>
+            const sugData = await sugRes.json();
+            tip.textContent = sugData.suggestions;
+        } catch (err) {
+            console.error("fetch error:", err);
+            msg.textContent = "error!";
+            msg.style.color = "red";
+        }
+    }
+    function uiupdt(data) {
+        const pctMap = { "Weak": 25, "Medium": 55, "Strong": 80, "Very Strong": 100 };
+        bar.style.width = (pctMap[data.strength] || 0) + '%';
+        bar.style.backgroundColor = data.color;   
+        msg.textContent = data.strength;
+        msg.style.color = data.color;
+        enttxt.textContent = data.entropy;
+        //added new condt check as remvoed entropy result - userkyakregadekhke
+        //if
+        if (enttxt) {
+            enttxt.textContent = data.entropy;
+        }
+        if(data.plot_url) {
+            chartimg.src = data.plot_url;
+            chartwrp.style.display = 'block';
+        }
+        document.getElementById('btn-copy').disabled = false;
+        document.getElementById('btn-dl').disabled = false;
+    }
+    function resetUI() {
+        bar.style.width = '0%';
+        msg.textContent = "Type a Password.....";
+        msg.style.color = "gray";
+        if (enttxt) {
+            enttxt.textContent = "0";
+        }
+        enttxt.textContent = "0";
+        chartwrp.style.display = 'none';
+        tip.textContent = "Waiting for text...";
+        document.getElementById('btn-copy').disabled = true;
+        document.getElementById('btn-dl').disabled = true;
+    }
+    document.getElementById('btn-gen').addEventListener('click', async () => {
+        try {
+            const res = await fetch('/geaipssd');
+            const data = await res.json();
+            const out = document.getElementById('gen-output');
+            out.value = data.password;
+            document.getElementById('btn-copy-gen').disabled = false;
+        } catch(e) {
+            alert("error!");
+        }
+    });
+    document.getElementById('btn-copy').addEventListener('click', () => {
+        navigator.clipboard.writeText(pass.value);
+    });
+    document.getElementById('btn-copy-gen').addEventListener('click', () => {
+        navigator.clipboard.writeText(document.getElementById('gen-output').value);
+    });
+    document.getElementById('btn-dl').addEventListener('click', () => {
+        const b = new Blob([pass.value], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(b);
+        a.download = 'your-saved-password.txt';
+        a.click();
+    });
+    document.getElementById('theme-btn').addEventListener('click', () => {
+        const body = document.body;
+        if(body.classList.contains('light-theme')) {
+            body.classList.replace('light-theme', 'dark-theme');
+        } else {
+            body.classList.replace('dark-theme', 'light-theme');
+        }
+    });
+
+//
+</script>
+
+
+
+
 </body>
 </html>
